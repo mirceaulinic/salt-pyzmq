@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  master:
+    image: python:3.9-slim-buster
+    hostname: master
+    container_name: master
+    network_mode: host
+    command: /usr/local/bin/run.sh
+    environment:
+      ZMQ: ${ZMQ}
+      SALT: ${SALT}
+      SALT_ROLE: master
+    volumes:
+      - ./master:/etc/salt/master
+      - ./run.sh:/usr/local/bin/run.sh
+  minion:
+    image: python:3.9-slim-buster
+    hostname: minion
+    container_name: minion
+    network_mode: host
+    command: /usr/local/bin/run.sh
+    volumes:
+      - ./minion:/etc/salt/minion
+      - ./run.sh:/usr/local/bin/run.sh
+    environment:
+      ZMQ: ${ZMQ}
+      SALT: ${SALT}
+      SALT_ROLE: minion
+    depends_on:
+      - master
